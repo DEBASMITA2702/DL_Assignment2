@@ -5,7 +5,7 @@ class CNN(nn.Module):
         '''Constructor to set all the class parameters'''
         super(CNN, self).__init__()
         
-        ''' Setting hyperparameters '''
+        ''' Setting the hyperparameters '''
         self.inputDepth = inputDepth
         self.outputDepth = numOfFilters
         self.stride = stride

@@ -88,7 +88,7 @@ configuration_values={
         'input_depth' : {'values' : [3]},
         'number_of_filters' : {'values' : [32,64,128,256,512]},
         'size_of_filter' : {'values' : [5,7,11]},
-        'neurons_in_fc' : {'values' : [32,64,128,256,512]},
+        'neurons_in_fc' : {'values' : [32,64,128,256,512,1024]},
         'batch_normalization' : {'values' : ['Yes','No']},
         'data_augment' : {'values' : ['Yes','No']},
         'dropout' : {'values' : [0,0.2,0.4]},

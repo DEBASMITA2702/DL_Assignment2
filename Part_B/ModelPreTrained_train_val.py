@@ -17,10 +17,8 @@ class FineTuningModelTrainVal(FineTuningModelBase):
         x, y = batch
         y_hat = self(x)
         loss = self.criterion(y_hat, y)
-        
         self.training_accuracy(y_hat, y)
-        self.log("training_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
-        
+        self.log("training_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
         return loss
     
     def on_train_epoch_end(self):
@@ -32,8 +30,11 @@ class FineTuningModelTrainVal(FineTuningModelBase):
         Function:
             Logs the training accuracy at the end of an epoch and resets the training accuracy metric.
         """
-        self.log('training_accuracy', self.training_accuracy.compute(), prog_bar=True, logger=True)
+        
+        accuracy = self.training_accuracy.compute()
+        self.log('training_accuracy', accuracy, prog_bar=True, logger=True, sync_dist=True)
         return self.training_accuracy.reset()
+        
     
     def validation_step(self, batch, batch_idx):
         """
@@ -48,10 +49,8 @@ class FineTuningModelTrainVal(FineTuningModelBase):
         x, y = batch
         y_hat = self(x)
         loss = self.criterion(y_hat, y)
-
         self.validation_accuracy(y_hat, y)
-        self.log("validation_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
-        
+        self.log("validation_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
         return loss
     
     def on_validation_epoch_end(self):
@@ -63,5 +62,7 @@ class FineTuningModelTrainVal(FineTuningModelBase):
         Function:
             Logs the validation accuracy at the end of an epoch and resets the validation accuracy metric.
         """
-        self.log("validation_accuracy", self.validation_accuracy.compute(), prog_bar=True, logger=True)
+        
+        accuracy = self.validation_accuracy.compute()
+        self.log('validation_accuracy', accuracy, prog_bar=True, logger=True, sync_dist=True)
         return self.validation_accuracy.reset()

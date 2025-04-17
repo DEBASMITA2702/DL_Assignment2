@@ -33,12 +33,8 @@ class DatasetLoader:
         '''
         train_path = ''
         test_path = ''
-        if "\\" in self.root:
-            train_path = self.root + "/train"
-            test_path = self.root + "/val"
-        else:
-            train_path = self.root + "\train"
-            test_path = self.root + "\val"
+        train_path = os.path.join(self.root, "train")
+        test_path = os.path.join(self.root, "val")
         train_val_dataset = torchvision.datasets.ImageFolder(root=train_path, transform=self.transform)
         
         '''splitting into train and val'''

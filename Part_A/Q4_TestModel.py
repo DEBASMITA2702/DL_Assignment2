@@ -1,4 +1,6 @@
 import Q1_CNNmodel
+import Q1_ForwardPass
+import Q1_HelperFunctions
 import Q2_CreateDataLoader
 import torch
 import wandb
@@ -7,6 +9,10 @@ import matplotlib.pyplot as plt
 import lightning as pl
 from Q2_LightningModel_EpochLogs import FastRunning
 from torchvision import transforms
+
+Q1_CNNmodel.CNN.forward = Q1_ForwardPass.forward
+Q1_CNNmodel.CNN.activationFunction = Q1_HelperFunctions.activationFunction
+Q1_CNNmodel.CNN.filterSizeCalculator = Q1_HelperFunctions.filterSizeCalculator
 
 '''setting the device to gpu if it is available'''
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -25,7 +31,7 @@ class TestBestModel:
 
         '''login to the wandb project'''
         wandb.login()
-        wandb.init(project="Debasmita-DA6401-Assignment-2", name="Part A Test plot")
+        wandb.init(project="Debasmita-DA6401-Assignment-2", name="Part_A Test plot")
 
         '''setting the device if it is available'''
         device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -35,12 +41,21 @@ class TestBestModel:
         trainLoader, valLoader, testLoader = dataLoader.data_loaders()
 
         '''running training and validation'''
-        model = Q1_CNNmodel.CNN(inputDepth=3, numOfFilters=64, sizeFilter=7, stride=1, padding=2, sizeDenseUnits=1024, filterOrganization="same", activation="Mish", batchNormalization="Yes", dropoutProb=0)
+        # EP_20_FIL_64_FILSIZE_7_FCSIZE_32_FILORG_same_AC_Mish_DRP_0.4_BS_16
+        model = Q1_CNNmodel.CNN(inputDepth=3, numOfFilters=64, sizeFilter=7, stride=1, padding=2, sizeDenseUnits=32, filterOrganization="same", activation="Mish", batchNormalization="Yes", dropoutProb=0.4)   
+
         lightningModel = FastRunning(model)
-        trainer = pl.Trainer(max_epochs=10)
+        
+        trainer = None
         if device != torch.device('cpu'):
-            trainer = pl.Trainer(max_epochs=10, devices=-1)
+            trainer = pl.Trainer(max_epochs=20, accelerator='gpu', devices=1, strategy='ddp_spawn')
+        else:
+            trainer = pl.Trainer(max_epochs=20)
+        
+        print("Starting training.", flush=True)
         trainer.fit(lightningModel, trainLoader, valLoader)
+        print("Training done.", flush=True)
+
 
         '''loading the test loader with a batch size of 1 on a shuffled test dataset to get the 30 random images'''
         images = list()
@@ -58,6 +73,8 @@ class TestBestModel:
         testLoader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=True)
 
         '''running test and printing the accuracy'''
+        print('Printing the accuracy.')
+        
         test_iter = iter(testLoader)
         while True:
             try:
@@ -77,7 +94,7 @@ class TestBestModel:
                 predictClass.append(class_names[predict])
                 trueClass.append(class_names[label])
             else:
-                pass
+                break
 
         print("Test Accuracy : ", correct / total)
 
@@ -99,7 +116,8 @@ class TestBestModel:
                 pass
             i += 1
 
-        wandb.log({"Part A plot": wandb.Image(plt)})
+        wandb.log({"Part_A plot": wandb.Image(plt)})
 
         plt.close()
         wandb.finish()
+        print("Plot done in Wandb.")

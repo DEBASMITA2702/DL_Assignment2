@@ -12,10 +12,10 @@ from pytorch_lightning.loggers import WandbLogger
 from Q2_LightningModel_EpochLogs import FastRunning
 from lightning.pytorch.callbacks.early_stopping import EarlyStopping
 
-''' Attaching the forward method from Q1_ForwardPass to the CNN class '''
+''' Attach the forward method from Q1_ForwardPass to the CNN class '''
 Q1_CNNmodel.CNN.forward = Q1_ForwardPass.forward
 
-''' Attaching helper functions from Q1_HelperFunctions to the CNN class '''
+''' Attach helper functions from Q1_HelperFunctions to the CNN class '''
 Q1_CNNmodel.CNN.activationFunction = Q1_HelperFunctions.activationFunction
 Q1_CNNmodel.CNN.filterSizeCalculator = Q1_HelperFunctions.filterSizeCalculator
 
@@ -23,7 +23,8 @@ Q1_CNNmodel.CNN.filterSizeCalculator = Q1_HelperFunctions.filterSizeCalculator
 wandb.login()
 
 '''setting the device to gpu if it is available'''
-device=torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+# model = torch.nn.DataParallel(model,device_ids = [0,1]).to(device)
 
 def main():
     '''initialize to project and create a config'''
@@ -31,7 +32,7 @@ def main():
     config=wandb.config
 
     '''get the data loader'''
-    dataLoader=Q2_CreateDataLoader.DatasetLoader(root='/kaggle/input/inaturalist-12k/nature_12K_dataset/inaturalist_12K',batch_size=config.batch_size)
+    dataLoader=Q2_CreateDataLoader.DatasetLoader_create(root='/kaggle/input/inaturalist-12k/nature_12K_dataset/inaturalist_12K',batch_size=config.batch_size)
     trainLoader,valLoader,testLoader=dataLoader.data_loaders()
 
     '''if data augmentation is needed then apply it'''
@@ -66,13 +67,12 @@ def main():
     wandb_logger=WandbLogger(project='Debasmita-DA6401-Assignment-2',log_model='all')
     
     '''define a trainer object to run the lightning object'''
-    trainer=pl.Trainer(max_epochs=config.epochs,logger=wandb_logger)
-    if device!=torch.device('cpu'):
-        trainer=pl.Trainer(max_epochs=config.epochs,devices=-1,logger=wandb_logger)
+    trainer = pl.Trainer(max_epochs=config.epochs, limit_train_batches=500, logger=wandb_logger)
+    if device != torch.device('cpu'):
+        trainer = pl.Trainer(max_epochs=config.epochs, devices=1, limit_train_batches=500, logger=wandb_logger)
 
     '''training and validation step'''
     trainer.fit(lightningModel,trainLoader,valLoader)
-
 
 '''setting the configuration values'''
 configuration_values={
@@ -88,7 +88,7 @@ configuration_values={
         'input_depth' : {'values' : [3]},
         'number_of_filters' : {'values' : [32,64,128,256,512]},
         'size_of_filter' : {'values' : [5,7,11]},
-        'neurons_in_fc' : {'values' : [32,64,128,256,512,1024]},
+        'neurons_in_fc' : {'values' : [32,64,128,256,512]},
         'batch_normalization' : {'values' : ['Yes','No']},
         'data_augment' : {'values' : ['Yes','No']},
         'dropout' : {'values' : [0,0.2,0.4]},

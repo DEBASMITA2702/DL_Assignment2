@@ -31,7 +31,7 @@ def main():
     config=wandb.config
 
     '''get the data loader'''
-    dataLoader=Q2_CreateDataLoader.DatasetLoader(root='../inaturalist_12K',batch_size=config.batch_size)
+    dataLoader=Q2_CreateDataLoader.DatasetLoader(root='/kaggle/input/inaturalist-12k/nature_12K_dataset/inaturalist_12K',batch_size=config.batch_size)
     trainLoader,valLoader,testLoader=dataLoader.data_loaders()
 
     '''if data augmentation is needed then apply it'''
@@ -99,5 +99,5 @@ configuration_values={
 
 '''running the sweep by creating an agent'''
 sweep_id=wandb.sweep(sweep=configuration_values,project='Debasmita-DA6401-Assignment-2')
-wandb.agent(sweep_id,function=main,count=150)
+wandb.agent(sweep_id,function=main,count=50)
 wandb.finish()

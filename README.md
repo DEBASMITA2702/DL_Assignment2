@@ -72,11 +72,11 @@ The arguments supported are :
 | `-wp`, `--wandb_project` | Debasmita-DA6401-Assignment-2 | Project name used to track experiments in Weights & Biases dashboard      |
 |  `-we`, `--wandb_entity` |     cs24m015-indian-institute-of-technology-madras    | Wandb Entity used to track experiments in the Weights & Biases dashboard. |
 |     `-r`,`--root`        |../inaturalist_12K |Absolute path of the dataset                                         |
-|     `-e`, `--epochs`     |       20      | Number of epochs to train neural network.                                 |
-|   `-b`, `--batch`        |       16       | Batch size used to train neural network.                                  |
-|   `-f`,`--filter`        |       64      | Number of filters in the first convolution layer                          |
+|     `-e`, `--epochs`     |       5      | Number of epochs to train neural network.                                 |
+|   `-b`, `--batch`        |       32       | Batch size used to train neural network.                                  |
+|   `-f`,`--filter`        |       32      | Number of filters in the first convolution layer                          |
 |   `-fs`,`--filter_size`  |        7      | Dimension of the filters                                                  |
-|    `-n`,`--neurons`      |     32      | Number of neurons in the fully connected layer                            |
+|    `-n`,`--neurons`      |     64      | Number of neurons in the fully connected layer                            |
 |    `-bn`,`--batch_normal`|     Yes       | choices: ['Yes','No']                                                     |
 |   `-da`,`--data_augment` |      No       | choices: ['Yes','No']                                                     |
 |   `-d`,`--dropout`       |       0.4       | Percentage of dropout in the network                                      |
@@ -124,7 +124,7 @@ It can be done by using the command:
 ```
 python train_partb.py
 ```
-By the above command, the model will run with the default configuration as specified inside my code.\
+By the above command, the model will run with the default configuration as specified inside my code. Since there was a positive corelation in Part A co-relation summary table, I tried running with higher number of epochs in Part B.\
 To customize the run, you need to specify the parameters like ```python train_partb.py <*args>```\
 For example,
 ```
@@ -136,7 +136,7 @@ The arguments supported are :
 | :----------------------: | :-----------: | :------------------------------------------------------------------------ |
 |     `-r`,`--root`        |../inaturalist_12K |Absolute path of the dataset                                         |
 |     `-e`, `--epochs`     |       20      | Number of epochs to train neural network.                                 |
-|   `-b`, `--batch`        |       16       | Batch size used to train neural network.                                  |
+|   `-b`, `--batch`        |       32       | Batch size used to train neural network.                                  |
 |   `-lr`,`--learning`     |    1e-4       | Learning rate to train the model                                          |
 |   `-fr`,`--freezed`      |      5        | Number of layers freezed from the beginning                               |
 |   `-t`,`--test`          |       0       | choices: [0,1]                                                            |

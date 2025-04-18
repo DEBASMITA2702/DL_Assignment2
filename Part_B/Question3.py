@@ -5,10 +5,10 @@ import lightning as pl
 '''function to the pre trained model'''
 def main():   
     '''
-        defining parameteres and loading the dataset
-        The values of the parameters are set according to the best model that I had achieved
+        Defining parameteres and loading the dataset.
+        Since there was a positive corelation in Part A co-relation summary table, I tried running with higher number of epochs in Part B.
     ''' 
-    batch_size=16
+    batch_size=32
     dataLoader=Create_DataLoader.DatasetLoader_create(root='/kaggle/input/inaturalist-12k/nature_12K_dataset/inaturalist_12K',batch_size=batch_size)
     trainLoader,valLoader,testLoader=dataLoader.data_loaders()
     

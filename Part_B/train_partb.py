@@ -1,10 +1,10 @@
 import torch
-import Create_DataLoader
+from Create_DataLoader import DatasetLoader_create
 import ModelPreTrained_test
 import lightning as pl
 import wandb
 import warnings
-import argparse
+from train_arguments_partb import arguments
 
 warnings.filterwarnings("ignore")
 
@@ -32,7 +32,7 @@ class PreTrained:
         '''
 
         '''loads dataset'''
-        dataLoader = Create_DataLoader.DatasetLoader_create(root=root, batch_size=batch_size)
+        dataLoader = DatasetLoader_create(root=root, batch_size=batch_size)
         trainLoader, valLoader, testLoader = dataLoader.data_loaders()
         
         '''setting number of output classes to 10'''
@@ -41,7 +41,13 @@ class PreTrained:
         '''creating the object of the class and a trainer on it'''
         preTrainedModel = ModelPreTrained_test.FineTuningModel(numOfOutputClasses, freezed, learning_rate)
 
-        trainer = pl.Trainer(max_epochs=epochs)
+        # trainer = pl.Trainer(max_epochs=epochs)
+        trainer = pl.Trainer(
+            max_epochs=epochs, 
+            strategy='ddp_find_unused_parameters_true',
+            devices=1,
+            enable_progress_bar=True
+        )
 
         '''executing train and validation steps'''
         trainer.fit(preTrainedModel, trainLoader, valLoader)
@@ -51,29 +57,9 @@ class PreTrained:
             trainer.test(preTrainedModel, testLoader)
             print("Test Accuracy : ", preTrainedModel.test_accuracy / len(testLoader))
 
-
-def arguments():
-    '''
-      Parameters:
-        None
-      Returns :
-        A parser object
-      Function:
-        Does command line argument parsing and returns the arguments passed
-    '''
-    commandLineArgument = argparse.ArgumentParser(description='Model Parameters')
-    commandLineArgument.add_argument('-r','--root', help="Absolute path of the dataset")
-    commandLineArgument.add_argument('-e','--epochs', type=int, help="Number of epochs to train neural network")
-    commandLineArgument.add_argument('-b','--batch', type=int, help="Batch size to divide the dataset")
-    commandLineArgument.add_argument('-lr','--learning', type=float, help="Learning rate to train the model")
-    commandLineArgument.add_argument('-fr','--freezed', type=int, help="Number of layers freezed from the beginning")
-    commandLineArgument.add_argument('-t','--test', type=int, choices=[0,1], help="choices: [0,1]")
-    
-    return commandLineArgument.parse_args()
-
 '''main driver function'''
 def main():
-    '''default values of each of the hyperparameter. it is set according to the config of my best model'''
+    '''default values of each of the hyperparameter. Since there was a positive corelation in Part_A co-relation summary table, I tried running with higher number of epochs in Part B.'''
     epochs = 20
     batch_size = 32
     learning_rate = 1e-4

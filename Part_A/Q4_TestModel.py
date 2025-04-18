@@ -41,16 +41,14 @@ class TestBestModel:
         trainLoader, valLoader, testLoader = dataLoader.data_loaders()
 
         '''running training and validation'''
-        # EP_20_FIL_64_FILSIZE_7_FCSIZE_32_FILORG_same_AC_Mish_DRP_0.4_BS_16
-        model = Q1_CNNmodel.CNN(inputDepth=3, numOfFilters=64, sizeFilter=7, stride=1, padding=2, sizeDenseUnits=32, filterOrganization="same", activation="Mish", batchNormalization="Yes", dropoutProb=0.4)   
-
+        # EP_5_FIL_32_FILSIZE_5_FCSIZE_64_FILORG_same_AC_Mish_DRP_0.4_BS_32
+        model = Q1_CNNmodel.CNN(inputDepth=3, numOfFilters=32, sizeFilter=5, stride=1, padding=2, sizeDenseUnits=64, filterOrganization="same", activation="Mish", batchNormalization="Yes", dropoutProb=0.4)   
         lightningModel = FastRunning(model)
-        
         trainer = None
         if device != torch.device('cpu'):
-            trainer = pl.Trainer(max_epochs=20, accelerator='gpu', devices=1, strategy='ddp_spawn')
+            trainer = pl.Trainer(max_epochs=5, accelerator='gpu', devices=1, strategy='ddp_spawn')
         else:
-            trainer = pl.Trainer(max_epochs=20)
+            trainer = pl.Trainer(max_epochs=5)
         
         print("Starting training.", flush=True)
         trainer.fit(lightningModel, trainLoader, valLoader)

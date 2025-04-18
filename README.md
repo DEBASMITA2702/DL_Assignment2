@@ -151,7 +151,7 @@ python train_partb.py -t 1
 ```
 This will run the model with default parameters and print the test accuracy.
 
-## Code Organization for Part A
+## Code Organization for Part B
 For Question 3, we have the 6 following files.
 - LoadDataset file : It contains the DatasetLoader class (with the data splitting logic).
 - Create_DataLoader file : It defines a new class 'DatasetLoader_create' with method data_loaders' that creates, returns, and encapsulates the data loaders. It imports 'DatasetLoader' from LoadDataset.py file.
